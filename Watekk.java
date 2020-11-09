@@ -26,44 +26,25 @@ class Calka {
         lista.add(new Gauss(0.6, 0.9));
         lista.add(new Gauss(0.9, 1.2));
         lista.add(new Gauss(1.2, 1.5));
-        int sumat = 0;
-        int sumas = 0;
-        int sumag = 0;
-        for (Thread t : lista) {
-            if (t instanceof Trapez) {
-                t.run();
-                sumat+=((Trapez) t).wynik;
-            }
-            if (t instanceof Simpson) {
-                t.run();
-                sumas+=((Simpson) t).wynik2;
-            }
-            if (t instanceof Gauss){
-                t.run();
-                sumag+=((Gauss) t).wynik;
-            }
+
+        for (Thread thread : lista) {
+            thread.start();
         }
-        System.out.println("SUMA TRAPEZ:"+sumat);
-        System.out.println("SUMA SIMPSON:"+sumas);
-        System.out.println("SUMA GAUSS:"+sumag);
+        try {
+            for (Thread thread : lista) {
+                thread.join();
+            }
+        } catch (InterruptedException e) {
+
+            System.out.println("" + e);
+        }
         System.out.println();
-//        try
-//        {
-//            t1.join();
-//            t2.join();
-//            s1.join();
-//            s2.join();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println(t1.wynik+t2.wynik);
-//        System.out.println(s1.wynik2+s2.wynik2);
-//    }
     }
 
     static class Trapez extends Thread {
         //double xp = 0.3, xk = 1.5, wynik = 0.0, n = 10;
         double xp, xk, wynik, n = 10;
+        public double wyniktrapez = 0;
 
 
         Trapez(double axp, double axk) {
@@ -86,16 +67,18 @@ class Calka {
             wynik *= h / 2;
             System.out.println("Trapez:");
             System.out.println(wynik);
+            wyniktrapez+=wynik;
         }
         public String toString()
         {
-            return wynik+"";
+            return wyniktrapez+"";
         }
     }
 
     static class Simpson extends Thread {
         //double xp = 0.3, xk = 1.5, n = 10;
         double xp, xk, n = 10, wynik2;
+        double wyniksimpson = 0;
 
         Simpson(double axp, double axk) {
             xp = axp;
@@ -120,16 +103,18 @@ class Calka {
             wynik2 = h / 6 * (obiekt2.calka(xp) + obiekt2.calka(xk) + (2 * wynik2) + (4 * wyniktemp));
             System.out.println("Simpson:");
             System.out.println(wynik2);
+            wyniksimpson+=wynik2;
 
         }
         public String toString()
         {
-            return wynik2+"";
+            return wyniksimpson+"";
         }
     }
     static class Gauss extends Thread
     {
         double a,b,wynik = 0;
+        double wynikgauss = 0;
         Gauss(double axp, double axk) {
             a = axp;
             b = axk;
@@ -138,7 +123,7 @@ class Calka {
         {
             Calka obiekt = new Calka();
             double suma = 0;
-//granice od do
+
             double[] waga2 = { 1.0000000000000000, 1.0000000000000000 };
             double[] wezel2 = { -0.5773502691896257, 0.5773502691896257 };
             for (int i = 0; i < waga2.length; i++)
@@ -210,9 +195,9 @@ class Calka {
                     0.2797053914892766, 0.2797053914892766, 0.1294849661688697, 0.1294849661688697 };
             double[] wezel7 = { 0.0000000000000000, 0.4058451513773972, -0.4058451513773972, -
                     0.7415311855993945, 0.7415311855993945, -0.9491079123427585, 0.9491079123427585 };
-            for (int i = 0; i < waga5.length; i++)
+            for (int i = 0; i < waga7.length; i++)
             {
-                wynik += waga5[i] * obiekt.calka((b - a) / 2.0 * wezel5[i] + (b + a) / 2.0);
+                wynik += waga7[i] * obiekt.calka((b - a) / 2.0 * wezel7[i] + (b + a) / 2.0);
             }
             suma = wynik * ((b - a) / 2.0);
             System.out.println("Kwadratura gaussa-legendre'a dla n = 7 wynosi: ");
@@ -224,15 +209,18 @@ class Calka {
                     0.3137066458778873, 0.2223810344533745, 0.2223810344533745, 0.1012285362903763, 0.1012285362903763 };
             double[] wezel8 = { -0.1834346424956498, 0.1834346424956498, -0.5255324099163290,
                     0.5255324099163290, -0.7966664774136267, 0.7966664774136267, -0.9602898564975363, 0.9602898564975363 };
-            for (int i = 0; i < waga6.length; i++)
+            for (int i = 0; i < waga8.length; i++)
             {
-                wynik += waga6[i] * obiekt.calka((b - a) / 2.0 * wezel6[i] + (b + a) / 2.0);
+                wynik += waga8[i] * obiekt.calka((b - a) / 2.0 * wezel8[i] + (b + a) / 2.0);
             }
             suma = wynik * ((b - a) / 2.0);
             System.out.println("Kwadratura gaussa-legendre'a dla n = 8 wynosi: ");
             System.out.println(suma);
-            suma = 0;
-            wynik = 0;
+            wynikgauss+=wynik;
+        }
+        public String toString()
+        {
+            return wynikgauss+"";
         }
     }
 }
